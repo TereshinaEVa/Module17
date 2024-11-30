@@ -17,7 +17,7 @@ async def all_tasks(db: Annotated[Session, Depends(get_db)]):
 
 
 @router.get('/task_id')
-async def task_by_id(task_id:int, db: Annotated[Session, Depends(get_db)]):
+async def task_by_id(task_id: int, db: Annotated[Session, Depends(get_db)]):
     task = db.scalars(select(Task).where(Task.id == task_id))
     if not task:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
