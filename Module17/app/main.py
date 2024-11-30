@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from .routers.task import router as tr
-from .routers.user import router as ur
+from app.routers import user as ur
+from app.routers import task as tr
 
 app = FastAPI(swagger_ui_parameters={'tryItOutEnabled': True})
 
@@ -9,5 +9,5 @@ app = FastAPI(swagger_ui_parameters={'tryItOutEnabled': True})
 async def welcome():
     return {"message": "Welcome to Taskmanager"}
 
-app.include_router(tr)
-app.include_router(ur)
+app.include_router(tr.router)
+app.include_router(ur.router)

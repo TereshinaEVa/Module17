@@ -17,18 +17,23 @@ async def all_users(db: Annotated[Session, Depends(get_db)]):
 
 
 @router.get('/user_id')
-async def user_by_id(user_id:int, db: Annotated[Session, Depends(get_db)]):
+async def user_by_id(user_id: int, db: Annotated[Session, Depends(get_db)]):
+    user = db.scalar(select(User).where(User.id == user_id))
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    all_tasks = db.scalars(select(User).where(User.id == user_id)).all()
-    return all_tasks
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return user
 
+
+@router.get('/user_id/tasks')
+async def tasks_by_user_id(user_id: int, db: Annotated[Session, Depends(get_db)]):
+    user = db.scalar(select(User).where(User.id == user_id))
+    if not user:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
+    all_tasks = db.scalars(select(Task).where(Task.user_id == user_id)).all()
+    return all_tasks
 
 @router.post('/create')
 async def create_user(create_user: CreateUser, db: Annotated[Session, Depends(get_db)]):
-    user = db.scalar(select(User).where(User.username == create_user.username))
-    if user:
-        raise HTTPException(status_code=status.HTTP_302_FOUND, detail='Sorry, User already exists')
     db.execute(insert(User).values(
         username=create_user.username,
         firstname=create_user.firstname,
